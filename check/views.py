@@ -9,10 +9,16 @@ from .serializers import (
     LoginSerializer, RegisterSerializer, TokenSerializer)
 from django.contrib.auth.models import User
 from rest_framework.views import APIView
-from django.contrib.auth import authenticate, login,get_user_model
+from django.contrib.auth import authenticate, login,get_user_model,logout
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
 from django.conf import settings
+from django.utils.decorators import method_decorator
+from django.views.decorators.csrf import csrf_exempt
+
+
+class BearerAuthentication(TokenAuthentication):
+    keyword = 'Bearer'
 
 
 User =get_user_model()
@@ -29,20 +35,35 @@ def create_auth_token(user):
     #print(serializer.data)
     return token1.key
 
-
+@method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
-    
     serializer_class = LoginSerializer
-
-    def post(self, request, format=None):
+    print("please god")
+    def post(self, request):
+        print("please god")
         serializer = LoginSerializer(data=request.data)      
         if serializer.is_valid():
              #python data type not json
             login(request, serializer.validated_data['user'])
             x=create_auth_token(serializer.validated_data['user'])
-            return Response({'Token': x},status=status.HTTP_200_OK)
+            user=serializer.validated_data['user']
+            return Response({'Token': x,'id':user.id},status=status.HTTP_200_OK)
         else:
-               return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class LogoutView(APIView):
+
+    authentication_classes = [BearerAuthentication,]
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get(self, request, format=None):
+        # simply delete the token to force a login
+        #logout(request)
+        request.user.auth_token.delete()
+        return Response({'token':'nhimilega'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 

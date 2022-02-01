@@ -21,13 +21,13 @@ SECRET_KEY = 'fj1s9uin3@7mdn3*jh3+avzm)u8w0rc!k*i8+q+*g59#)xz*_*'
 
 
 
-DEBUG = True
+DEBUG =True
 '''int(os.environ.get('DEBUG','1'))
 '''
 '''if not DEBUG:
     SECRET_KEY = config('SECRET_KEY')'''
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -44,11 +44,13 @@ INSTALLED_APPS = [
     'check',
     'tutor',
    'phonenumber_field',
+    'corsheaders',
+
 ]
 AUTH_USER_MODEL = 'check.myuser'
 
 MIDDLEWARE = [
-   # 'corsheaders.middleware.CorsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -56,8 +58,9 @@ MIDDLEWARE = [
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+ 
 ]
+CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'dev.urls'
 
@@ -76,6 +79,13 @@ TEMPLATES = [
         },
     },
 ]
+
+
+REST_FRAMEWORK = {
+      'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication'
+    ]
+}
 
 WSGI_APPLICATION = 'dev.wsgi.application'
 
