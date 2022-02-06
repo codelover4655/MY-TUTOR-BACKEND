@@ -102,7 +102,7 @@ class macreateView(generics.GenericAPIView):
                 if serializer.is_valid():
                     serializer.save()
                     x=create_auth_token(user)
-                    send_mail(to_emails=user.email,text="thanks for registering"+user.first_name)
+                    #send_mail(to_emails=user.email,text="thanks for registering"+user.first_name)
                     return Response({'Token': x},status=status.HTTP_200_OK)
                 else:
                      return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

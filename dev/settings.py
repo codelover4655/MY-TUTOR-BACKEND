@@ -45,8 +45,16 @@ INSTALLED_APPS = [
     'tutor',
    'phonenumber_field',
     'corsheaders',
+        "django.contrib.sites",
 
+   "dj_rest_auth",
+    "allauth",
+    "allauth.account",
+   "dj_rest_auth.registration",   "allauth.socialaccount",   "allauth.socialaccount.providers.google",
+  
+ 
 ]
+
 AUTH_USER_MODEL = 'check.myuser'
 
 MIDDLEWARE = [
@@ -75,15 +83,39 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
             ],
         },
     },
 ]
 
+AUTHENTICATION_BACKENDS = [
+    
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+
+
+]
+SOCIALACCOUNT_PROVIDERS = {
+   'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'online',
+       }
+    }
+ }
+SOCIALACCOUNT_EMAIL_VERIFICATION = "none"
+SOCIALACCOUNT_EMAIL_REQUIRED = False
+SITE_ID = 1
 
 REST_FRAMEWORK = {
       'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication'
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.BasicAuthentication'
     ]
 }
 

@@ -15,6 +15,10 @@ from rest_framework.authentication import TokenAuthentication
 from django.conf import settings
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from dj_rest_auth.registration.views import SocialLoginView
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+
 
 
 class BearerAuthentication(TokenAuthentication):
@@ -29,11 +33,14 @@ User =get_user_model()
 # token is only genrated for users not models
 
 
+
 def create_auth_token(user):
     token1,_= Token.objects.get_or_create(user=user)
     #serializer=TokenSerializer(token1)
     #print(serializer.data)
     return token1.key
+
+
 
 @method_decorator(csrf_exempt, name='dispatch')
 class LoginView(APIView):
@@ -51,6 +58,26 @@ class LoginView(APIView):
         else:
             
              return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class GoogleLogin(SocialLoginView):
+    authentication_classes = [] # disable authentication
+    adapter_class = GoogleOAuth2Adapter
+    callback_url = "http://127.0.0.1:8000/"
+    client_class = OAuth2Client
+
+class  giveid(APIView):
+    def post(self, request, *args, **kwargs):
+        token=request.data['token']
+        user = Token.objects.get(key=token).user
+        
+        return Response({'id':user.id})
+
+
+   
+
+
 
 
 class LogoutView(APIView):
